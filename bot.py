@@ -36,8 +36,11 @@ async def handle_image_upload(update: Update, context: ContextTypes.DEFAULT_TYPE
     message = update.message or update.channel_post
     print("📥 Handler triggered...")
 
-    if not message or not message.photo:
-        print("⚠️ No image in message.")
+    # Allow only messages with photo AND caption
+    if not message or not message.photo or not message.caption:
+        print("⚠️ Image or caption missing.")
+        if message:
+            await message.reply_text("⚠️ Please send an image *with* text (caption).")
         return
 
     try:
@@ -60,7 +63,7 @@ async def handle_image_upload(update: Update, context: ContextTypes.DEFAULT_TYPE
         doc = {
             "chat_id": message.chat.id,
             "chat_type": message.chat.type.name,
-            "caption": message.caption or "",
+            "caption": message.caption,
             "image_url": image_url,
             "timestamp": message.date,
         }
@@ -68,20 +71,33 @@ async def handle_image_upload(update: Update, context: ContextTypes.DEFAULT_TYPE
         print(f"📦 Saved to MongoDB: {doc}")
 
         # Reply with confirmation
-        reply_text = f"✅ Image uploaded and saved!\nURL: {image_url}"
-        if message.caption:
-            reply_text += f"\n📝 Caption: {message.caption}"
+        reply_text = f"✅ Ticket created successfully!\nticket_id: {message.chat.id}\n📝 Caption: {message.caption}"
         await message.reply_text(reply_text)
 
     except Exception as e:
         print(f"❌ Upload failed: {e}")
         await message.reply_text("❌ Failed to upload or save data.")
 
+
+# Handle only text messages (no image)
+async def handle_only_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message or update.channel_post
+    if message and message.text:
+        print("✉️ Only text received — rejecting.")
+        await message.reply_text("⚠️ Please send an image *with* text (caption).")
+
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
+
+    # Only handle photo + caption
     app.add_handler(MessageHandler(filters.PHOTO, handle_image_upload))
+
+    # Handle text-only messages
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_only_text))
+
     print("🤖 Bot is running...")
     app.run_polling()
+
 
 if __name__ == "__main__":
     main()

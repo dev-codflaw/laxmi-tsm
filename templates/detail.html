@@ -1,9 +1,88 @@
 <!DOCTYPE html>
-<html>
-<head><title>Image Detail</title></head>
-<body>
-  <h2>{{ message.caption or 'No caption' }}</h2>
-  <img src="{{ message.signed_url }}" width="600" />
-  <p><a href="/">⬅ Back to list</a></p>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket Detail</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Back Button -->
+  <div class="px-4 py-4">
+    <a href="/" class="inline-block px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+      ⬅ Back to List
+    </a>
+  </div>
+
+  <!-- Main Card -->
+  <div class="max-w-5xl mx-auto px-4 py-4 bg-white shadow rounded-lg space-y-6">
+    <!-- Title -->
+    <h2 class="text-xl font-semibold text-center">📝 Ticket Details</h2>
+
+    <!-- Top Row (Text Details + Image) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <!-- Ticket Info -->
+      <div class="space-y-4 text-sm">
+        <div>
+          <p class="text-gray-500">Ticket ID</p>
+          <p class="font-mono text-blue-600 text-sm">{{ message._id }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500">Message</p>
+          <p class="text-gray-800">{{ message.caption or 'No caption provided.' }}</p>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div>
+        <p class="text-gray-500 text-sm mb-1">Attachment</p>
+        <div class="rounded border shadow cursor-pointer overflow-hidden">
+          <img src="{{ message.signed_url }}"
+               alt="Image"
+               class="object-contain max-h-[250px] w-full"
+               onclick="openModal(this.src)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Note -->
+    <div>
+      <label for="actionNote" class="block text-sm text-gray-600 mb-1">🛠 Action Taken</label>
+      <textarea id="actionNote" rows="3"
+                class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 resize-none"
+                placeholder="Type the action taken here (UI only)">
+      </textarea>
+    </div>
+
+    <!-- Save Button -->
+    <div class="text-right">
+      <button class="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+        💾 Save (UI Only)
+      </button>
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50" onclick="closeModal()">
+    <img id="modalImage" class="max-w-full max-h-full border-4 border-white rounded shadow-lg" />
+  </div>
+
+  <!-- JS for Modal -->
+  <script>
+    function openModal(src) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = src;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+  </script>
+
 </body>
 </html>
