@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Uploaded Images</title></head>
+<body>
+<h2>Uploaded Images</h2>
+<ul>
+  {% for msg in messages %}
+    <li>
+      <a href="/detail/{{ msg._id }}">{{ msg.caption or 'No caption' }}</a><br>
+      <img src="{{ msg.signed_url }}" width="200" />
+    </li>
+  {% endfor %}
+</ul>
+</body>
+</html>

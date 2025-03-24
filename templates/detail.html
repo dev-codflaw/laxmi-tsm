@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head><title>Image Detail</title></head>
+<body>
+  <h2>{{ message.caption or 'No caption' }}</h2>
+  <img src="{{ message.signed_url }}" width="600" />
+  <p><a href="/">⬅ Back to list</a></p>
+</body>
+</html>
